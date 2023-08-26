@@ -5,7 +5,10 @@ import sys
 
 MCAST_GROUP = '224.1.1.1'
 MCAST_PORT = 5007
+MCAST_TTL = 2
+
 MAP_JSON_PATH = 'map.json'
+
 HOSTS_PATH = '/etc/hosts'
 HOSTS_START_STR = '# CARP START\n'
 HOSTS_END_STR = '# CARP END'
@@ -59,6 +62,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as soc
                 }
                 sock.sendto(bytes(json.dumps(reply), 'utf-8'), addr)
     else:
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MCAST_TTL)
+        sock.settimeout(5)
         while True:
             print('Sending hostname')
             data = {
